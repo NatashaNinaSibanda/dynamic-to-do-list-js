@@ -30,8 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addButton.addEventListener('click', addTask);
 
-    taskInput.addEventListener('keypress', (event) => {
+    taskInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
+            event.preventDefault();
             addTask();
         }
     });
