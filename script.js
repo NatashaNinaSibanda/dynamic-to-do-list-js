@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
 
-    function addTask() {
-        const taskText = taskInput.value.trim();
+    // Load tasks from Local Storage and display them
+    function loadTasks() {
+        const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        storedTasks.forEach(taskText => addTask(taskText, false));
+    }
 
+    // Add a new task; save to local storage if save = true
+    function addTask(taskText = taskInput.value.trim(), save = true) {
         if (taskText === '') {
             alert('Please enter a task.');
             return;
@@ -16,25 +21,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'Remove';
-        removeBtn.classList.add('remove-btn');  // <-- Use classList.add here
+        removeBtn.classList.add('remove-btn');
 
         removeBtn.onclick = () => {
             taskList.removeChild(li);
+            removeTaskFromStorage(taskText);
         };
 
         li.appendChild(removeBtn);
         taskList.appendChild(li);
 
+        if (save) {
+            const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            storedTasks.push(taskText);
+            localStorage.setItem('tasks', JSON.stringify(storedTasks));
+        }
+
         taskInput.value = '';
     }
 
+    // Remove a task from Local Storage
+    function removeTaskFromStorage(taskText) {
+        const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        const updatedTasks = storedTasks.filter(task => task !== taskText);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    }
+
+    // Event listeners
     addButton.addEventListener('click', addTask);
 
     taskInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
-            event.preventDefault();
             addTask();
         }
     });
+
+    // Load tasks on page load
+    loadTasks();
 });
+
 
